@@ -1,14 +1,17 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : Singleton<PlayerController>
 {
     //TODO: Attributes
+    [Header("Components")]
     public Animator _animator;
-    public float _walkSpeed = 1f;
+    [SerializeField] private Rigidbody _rigidbody;
+    [Range(0.1f,5.0f),Tooltip("Its a walk speed")]public float _walkSpeed = 1f;
     public float _runSpeed = 2f;
+    [Space(10)]
     public float _jumpForce = 10f;
-    public Rigidbody _rigidbody;
+    
 
     private Vector2 _movementInput;
     private float _speed;
@@ -54,6 +57,17 @@ public class PlayerController : MonoBehaviour
     // TODO: Make it easier to read
     void FixedUpdate()
     {
+        if (_isRunning)
+        {
+            _speed = _runSpeed;
+        }
+        else if (!_isRunning)
+        {
+            _speed = _walkSpeed;
+        }
+
+        _speed = _isRunning ? _runSpeed : _walkSpeed;
+
         Vector3 movement = new Vector3(_movementInput.x, 0, _movementInput.y);
         movement *= _speed * 0.1f;
         transform.Translate(movement, Space.Self);
@@ -72,6 +86,13 @@ public class PlayerController : MonoBehaviour
         if (direction != Vector3.zero)
         {
             _animator.transform.forward = direction;
+        }
+    }
+    private void OllisionEnter(Collision collision)
+    {
+        if(collision.gameObject.TryGetComponent<Coin>(out Coin coin))
+        {
+            coin.Collect();
         }
     }
 }
