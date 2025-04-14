@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Coin : MonoBehaviour
+public class Coin : MonoBehaviour , ICollectable
 {
     [SerializeField] private int price = 5;
     void PrintCurrentMoney(int currentMoney)
